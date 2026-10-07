@@ -1,8 +1,8 @@
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop() {
-  Serial.println("Hello World");
-  delay(5000);
+  Serial.println("hello world");
+  delay(2000);
 }
