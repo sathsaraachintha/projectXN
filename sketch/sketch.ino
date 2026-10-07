@@ -91,17 +91,17 @@ void drawButtonCard(int x, int y, int w, int h, const char* label, bool pressed)
   lcd.setTextDatum(top_center);
   lcd.setTextColor(TFT_WHITE, boxColor);
   lcd.setTextSize(2);
-  lcd.drawString(label, x + w / 2, y + 10);
+  lcd.drawString(label, x + w / 2, y + 14);
   
   lcd.setTextDatum(middle_center);
   if (pressed) {
     lcd.setTextColor(TFT_YELLOW, boxColor);
     lcd.setTextSize(3);
-    lcd.drawString("PRESSED", x + w / 2, y + h / 2 + 10);
+    lcd.drawString("PRESSED", x + w / 2, y + h / 2 + 12);
   } else {
     lcd.setTextColor(TFT_LIGHTGRAY, boxColor);
     lcd.setTextSize(3);
-    lcd.drawString("RELEASED", x + w / 2, y + h / 2 + 10);
+    lcd.drawString("RELEASED", x + w / 2, y + h / 2 + 12);
   }
 }
 
@@ -109,7 +109,7 @@ void setup() {
   Serial.begin(115200);
   delay(500);
 
-  // Wake up expanders (ensure reset lines are released)
+  // Wake up expanders
   pinMode(21, OUTPUT);
   digitalWrite(21, HIGH);
   pinMode(38, OUTPUT);
@@ -122,48 +122,47 @@ void setup() {
   // Configure PCA9536: P0 (Button 1) and P3 (Button 2) as inputs
   Wire.beginTransmission(PCA9536_ADDR);
   Wire.write(0x03); // Configuration Register
-  Wire.write(0x09); // P0 (bit 0) and P3 (bit 3) as input, P1/P2 as output
+  Wire.write(0x09); // P0 and P3 as inputs
   Wire.endTransmission();
 
-  // Initialize display
+  // Initialize display in Portrait mode (240x320)
   lcd.init();
-  lcd.setRotation(1); // Landscape (320x240)
+  lcd.setRotation(0); // Portrait mode (240x320)
   lcd.fillScreen(TFT_BLACK);
 
-  // Draw Header
-  lcd.fillRect(0, 0, lcd.width(), 36, 0x0010);
-  lcd.drawFastHLine(0, 36, lcd.width(), TFT_DARKCYAN);
+  // Header displaying "Achintha"
+  lcd.fillRect(0, 0, lcd.width(), 44, 0x0010);
+  lcd.drawFastHLine(0, 44, lcd.width(), TFT_DARKCYAN);
   lcd.setTextDatum(middle_center);
   lcd.setTextColor(TFT_CYAN, 0x0010);
-  lcd.setTextSize(2);
-  lcd.drawString("NORVI X - BUTTON MONITOR", lcd.width() / 2, 18);
+  lcd.setTextSize(3);
+  lcd.drawString("Achintha", lcd.width() / 2, 22);
 
-  // Initial draw
-  drawButtonCard(15, 55, 140, 155, "BUTTON 1 (P0)", false);
-  drawButtonCard(165, 55, 140, 155, "BUTTON 2 (P3)", false);
+  // Vertically stacked cards for portrait layout
+  drawButtonCard(15, 60, 210, 115, "BUTTON 1 (P0)", false);
+  drawButtonCard(15, 190, 210, 115, "BUTTON 2 (P3)", false);
 
-  Serial.println("NORVI X Button Monitor Initialized.");
+  Serial.println("Achintha - Button Monitor Initialized (Portrait Mode).");
 }
 
 void loop() {
   uint8_t raw = readPCA9536();
   
   if (raw != 0xFF) {
-    // Buttons are active LOW (0 when pressed, 1 when released)
     bool btn1Pressed = !(raw & (1 << 0)); // P0 is Button 1
     bool btn2Pressed = !(raw & (1 << 3)); // P3 is Button 2
 
     // Update Button 1 card if changed
     if (btn1Pressed != prevBtn1) {
       prevBtn1 = btn1Pressed;
-      drawButtonCard(15, 55, 140, 155, "BUTTON 1 (P0)", btn1Pressed);
+      drawButtonCard(15, 60, 210, 115, "BUTTON 1 (P0)", btn1Pressed);
       Serial.printf("Button 1: %s\n", btn1Pressed ? "PRESSED" : "RELEASED");
     }
 
     // Update Button 2 card if changed
     if (btn2Pressed != prevBtn2) {
       prevBtn2 = btn2Pressed;
-      drawButtonCard(165, 55, 140, 155, "BUTTON 2 (P3)", btn2Pressed);
+      drawButtonCard(15, 190, 210, 115, "BUTTON 2 (P3)", btn2Pressed);
       Serial.printf("Button 2: %s\n", btn2Pressed ? "PRESSED" : "RELEASED");
     }
   }
