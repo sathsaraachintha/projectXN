@@ -7,12 +7,21 @@
         "name": "LovyanGFX",
         "version": "1.2.32",
         "scope": "shared"
+      },
+      {
+        "name": "PubSubClient",
+        "version": "2.8",
+        "scope": "shared"
       }
     ],
     "managerResolved": [
       {
         "name": "LovyanGFX",
         "version": "1.2.32"
+      },
+      {
+        "name": "PubSubClient",
+        "version": "2.8"
       }
     ],
     "git": []
